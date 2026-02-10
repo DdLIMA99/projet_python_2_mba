@@ -1,0 +1,16 @@
+# Données lourdes (Kaggle)
+data/
+
+# Environnement virtuel
+.venv/
+venv/
+env/
+
+# Cache Python
+__pycache__/
+*.pyc
+
+# Packaging
+dist/
+build/
+*.egg-info/
