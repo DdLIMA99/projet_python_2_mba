@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: banking_api
+Version: 1.0.0
+Summary: API de transactions bancaires pour MBA ESG
+Requires-Python: >=3.12
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: pandas
+Requires-Dist: pydantic
