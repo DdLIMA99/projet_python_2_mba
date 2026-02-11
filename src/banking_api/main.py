@@ -1,84 +1,38 @@
 from fastapi import FastAPI, Query, HTTPException
 from contextlib import asynccontextmanager
 from typing import List, Optional
+import logging
 
-# Imports de tes services
 from .services.system_service import SystemService
 from .services.transactions_service import TransactionsService
-from .services.stats_service import StatsService
-from .services.customer_service import CustomerService 
-from .services.fraud_detection_service import FraudDetectionService  
+from .services.fraud_detection_service import FraudDetectionService
 
-# Import du modèle 
-from .models.transaction import Transaction
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Performance : Chargement et fusion au démarrage
-    print("Chargement du dataset en cours...")
     SystemService.load_dataset()
-    print("Dataset chargé et prêt !")
     yield
 
-app = FastAPI(
-    title="Banking Transactions API",
-    version="1.0.0",
-    description="API REST industrielle - Traitement de 13M de transactions",
-    lifespan=lifespan
-)
-
-# --- ROUTES ADMINISTRATION ---
+app = FastAPI(title="Banking Transactions API", version="1.0.0")
 
 @app.get("/api/system/health")
-def health_check() -> dict:
-    """Vérifie si le dataset est bien chargé en mémoire."""
-    return SystemService.get_health_status()
-
-# --- ROUTES TRANSACTIONS ---
+def health_check():
+    return SystemService.get_status()
 
 @app.get("/api/transactions")
-def get_transactions(
-    page: int = Query(1, ge=1), 
-    limit: int = Query(10, le=100), 
-    use_chip: Optional[str] = None 
-):
-    """Liste paginée avec support des colonnes réelles (use_chip)."""
+def get_transactions(page: int = Query(1, ge=1), limit: int = Query(10, le=100)):
     try:
         df = SystemService.get_data()
-        return TransactionsService.get_paginated_transactions(df, page=page, limit=limit, use_chip=use_chip)
+        return TransactionsService.get_paginated_transactions(df, page, limit)
     except Exception as e:
-        # Capture les erreurs de sérialisation JSON (comme le problème 'zip' NaN)
-        raise HTTPException(status_code=500, detail=f"Erreur de données : {str(e)}")
-
-@app.get("/api/transactions/types", response_model=List[str])
-def get_transaction_types():
-    """Récupère les modes de paiement (Swipe, Chip, Online)."""
-    df = SystemService.get_data()
-    return TransactionsService.get_unique_chips(df)
-
-@app.get("/api/transactions/{tx_id}")
-def get_transaction_details(tx_id: int):
-    """Détails d'une transaction unique sécurisée contre les NaN."""
-    df = SystemService.get_data()
-    result = TransactionsService.get_transaction_by_id(df, tx_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="Transaction non trouvée")
-    return result
-
-# --- ROUTES ANALYTIQUES ---
-
-@app.get("/api/customers/{client_id}/transactions")
-def get_client_transactions(client_id: int):
-    """Historique complet filtré par client_id."""
-    df = SystemService.get_data()
-    return TransactionsService.get_transactions_by_client(df, client_id)
+        logger.error(f"Erreur transactions: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 @app.get("/api/fraud/summary")
 def get_fraud_report():
-    """Rapport de fraude ultra-rapide (données pré-calculées)."""
-    # On renvoie directement les chiffres pour éviter de saturer la RAM
-    return {
-        "total_transactions": 13305915,
-        "fraud_cases": 8213,  # Chiffre indicatif basé sur le dataset
-        "fraud_percentage": 0.06
-    }
+    try:
+        df = SystemService.get_data()
+        return FraudDetectionService.get_fraud_summary(df)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Erreur calcul fraude") from e
