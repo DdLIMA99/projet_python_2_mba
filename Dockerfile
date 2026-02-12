@@ -1,18 +1,50 @@
-FROM python:3.12-slim
+from fastapi import FastAPI, Query, HTTPException
+from contextlib import asynccontextmanager
+import logging
 
-WORKDIR /app
+from .services.system_service import SystemService
+from .services.transactions_service import TransactionsService
+from .services.fraud_detection_service import FraudDetectionService
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+logger = logging.getLogger(__name__)
 
-# Sécurité : Création de l'utilisateur d'abord
-RUN useradd -m appuser
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    SystemService.load_dataset()
+    yield
 
-# CORRECTION : Copie et changement de propriétaire en une seule étape
-COPY --chown=appuser:appuser . .
+app = FastAPI(
+    title="Banking Transactions API", 
+    version="1.0.0", 
+    lifespan=lifespan
+)
 
-USER appuser
+@app.get("/api/system/health")
+def health_check():
+    status = SystemService.get_status()
+    # Si le dataset n'est pas chargé, on renvoie une erreur 503 (Service Unavailable)
+    if not status.get("dataset_loaded", False):
+        raise HTTPException(status_code=503, detail=status)
+    return status
 
-EXPOSE 8000
+@app.get("/api/transactions")
+# CORRECTION : Ajout de ge=1 pour 'limit' pour éviter les nombres négatifs ou zéro
+def get_transactions(
+    page: int = Query(1, ge=1), 
+    limit: int = Query(10, ge=1, le=100)
+):
+    try:
+        df = SystemService.get_data()
+        return TransactionsService.get_paginated_transactions(df, page, limit)
+    except Exception as e:
+        logger.exception("Error in transactions endpoint")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
-CMD ["uvicorn", "src.banking_api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+@app.get("/api/fraud/summary")
+def get_fraud_report():
+    try:
+        df = SystemService.get_data()
+        return FraudDetectionService.get_fraud_summary(df)
+    except Exception as e:
+        logger.exception("Error in fraud summary endpoint")
+        raise HTTPException(status_code=500, detail="Internal server error") from e
