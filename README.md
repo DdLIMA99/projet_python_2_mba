@@ -15,49 +15,44 @@ Le projet intègre une **fusion de données dynamique** entre des transactions b
 ## 🏗️ Architecture & Bonus 
 Ce projet respecte les exigences de mise en conformité technique suivantes :
 
-1.  **Swagger UI** : Documentation interactive intégrée .
-2.  **Streamlit (PROJET EXTERNE)** : Interface métier séparée pour le monitoring .
-    * Lien du dépôt séparé : https://github.com/DdLIMA99/Projet-Streamlit-Banking
-3.  **CI/CD (GitHub Actions)** : Pipeline automatisé de vérification du code .
-4.  **Docker** : Conteneurisation complète de l'API .
+1.  **Swagger UI** : Documentation interactive intégrée.
+2.  **Streamlit (PROJET EXTERNE)** : Interface métier séparée pour le monitoring.
+    * Lien du dépôt : https://github.com/DdLIMA99/Projet-Streamlit-Banking
+3.  **CI/CD (GitHub Actions)** : Pipeline automatisé de vérification du code.
+4.  **Docker** : Conteneurisation complète de l'API.
 
 ---
 
 ## 🚀 Installation et Lancement
+
 ### 1. Prérequis
-* Python 3.12+ (Aligné sur pyproject.toml pour la compatibilité)
-* Dossier data/ contenant les fichiers sources CSV et JSON.
-  
+* **Python 3.12+** (Indispensable pour la compatibilité des dépendances).
+* Dossier `data/` contenant les sources CSV et JSON.
+
 ### 2. Méthode Classique (Local)
-1. **Installation des dépendances** : 
-   `pip install -r requirements.txt`
-2. **Démarrage de l'API** : 
-   `uvicorn src.banking_api.main:app --reload`
+1. **Installation** : `pip install -r requirements.txt`
+2. **Démarrage** : `uvicorn src.banking_api.main:app --reload`
 3. **Accès Swagger** : [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ### 3. Méthode Docker (Bonus 🐳)
-Pour isoler l'environnement et garantir le fonctionnement quel que soit l'hôte :
-1. **Build de l'image** : `docker build -t banking-api .`
+1. **Build** : `docker build -t banking-api .`
 2. **Lancement** : `docker run -p 8000:8000 banking-api`
 
 ---
 
 ## 📊 Application Métier (Streamlit)
-L'application métier est hébergée sur un dépôt séparé pour respecter la consigne de séparation des projets.
-* **Lancement** : `streamlit run app_streamlit.py` (nécessite que l'API soit active).
+L'application est hébergée séparément.
+* **Lancement** : `streamlit run streamlit_app.py` (L'API doit être active).
 
 ---
 
 ## 🛠️ Endpoints Principaux
-* **Santé du système** : `GET /api/system/health` (Renvoie 503 si le dataset n'est pas prêt).
-* **Résumé de la Fraude** : `GET /api/fraud/summary`
-* **Liste des Transactions** : `GET /api/transactions?page=1&limit=10` (Supporte la pagination).
+* **Santé** : `GET /api/system/health`
+* **Fraude** : `GET /api/fraud/summary`
+* **Transactions** : `GET /api/transactions?page=1&limit=10`
 
 ---
 
 ## 📈 Performance & Validation
 * **Volume** : 13 305 915 lignes traitées.
-
-* **Optimisation** : Temps de réponse rapide grâce au **Singleton Pattern** pour le pré-chargement en mémoire vive (RAM).
-
-
+* **Optimisation** : Pré-chargement en mémoire via Singleton Pattern.
