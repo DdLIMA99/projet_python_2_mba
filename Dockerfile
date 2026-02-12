@@ -1,17 +1,16 @@
-# Utiliser Python 3.12 pour correspondre au pyproject.toml
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Installation des dépendances
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copie du code
-COPY . .
+# Sécurité : Création de l'utilisateur d'abord
+RUN useradd -m appuser
 
-# Sécurité : Création d'un utilisateur non-root
-RUN useradd -m appuser && chown -R appuser /app
+# CORRECTION : Copie et changement de propriétaire en une seule étape
+COPY --chown=appuser:appuser . .
+
 USER appuser
 
 EXPOSE 8000
