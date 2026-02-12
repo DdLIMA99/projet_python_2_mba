@@ -49,9 +49,9 @@ L'application métier est hébergée sur un dépôt séparé pour respecter la c
 ---
 
 ## 🛠️ Endpoints Principaux
-* **Santé du système** : `GET /api/system/health`
+* **Santé du système** : `GET /api/system/health` (Renvoie 503 si le dataset n'est pas prêt).
 * **Résumé de la Fraude** : `GET /api/fraud/summary`
-* **Liste des Transactions** : `GET /api/transactions`
+* **Liste des Transactions** : `GET /api/transactions?page=1&limit=10` (Supporte la pagination).
 
 ---
 
@@ -59,4 +59,5 @@ L'application métier est hébergée sur un dépôt séparé pour respecter la c
 * **Volume** : 13 305 915 lignes traitées.
 
 * **Optimisation** : Temps de réponse rapide grâce au **Singleton Pattern** pour le pré-chargement en mémoire vive (RAM).
+
 
