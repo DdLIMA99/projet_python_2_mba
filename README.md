@@ -24,11 +24,10 @@ Ce projet respecte les exigences de mise en conformité technique suivantes :
 ---
 
 ## 🚀 Installation et Lancement
-
 ### 1. Prérequis
-* Python 3.10+
-* Dossier `data/` contenant : `transactions_data.csv` et `train_fraud_labels.json`.
-
+* Python 3.12+ (Aligné sur pyproject.toml pour la compatibilité)
+* Dossier data/ contenant les fichiers sources CSV et JSON.
+  
 ### 2. Méthode Classique (Local)
 1. **Installation des dépendances** : 
    `pip install -r requirements.txt`
@@ -60,3 +59,4 @@ L'application métier est hébergée sur un dépôt séparé pour respecter la c
 * **Volume** : 13 305 915 lignes traitées.
 
 * **Optimisation** : Temps de réponse rapide grâce au **Singleton Pattern** pour le pré-chargement en mémoire vive (RAM).
+
