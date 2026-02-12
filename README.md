@@ -58,4 +58,5 @@ L'application métier est hébergée sur un dépôt séparé pour respecter la c
 
 ## 📈 Performance & Validation
 * **Volume** : 13 305 915 lignes traitées.
+
 * **Optimisation** : Temps de réponse rapide grâce au **Singleton Pattern** pour le pré-chargement en mémoire vive (RAM).
