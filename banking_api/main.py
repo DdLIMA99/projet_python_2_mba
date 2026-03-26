@@ -80,6 +80,8 @@ def root() -> dict:
         "docs": "/docs",
         "redoc": "/redoc",
     }
+
+
 def main() -> None:
     """CLI entry point to run the API server."""
     import uvicorn
@@ -88,3 +90,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+    
