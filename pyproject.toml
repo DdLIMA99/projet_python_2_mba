@@ -40,7 +40,7 @@ dev = [
 ]
 
 [project.scripts]
-banking-api = "banking_api.main:app"
+banking-api = "banking_api.main:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

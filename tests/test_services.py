@@ -304,4 +304,4 @@ class TestDataLoader:
         """load_data raises FileNotFoundError for missing file."""
         data_loader.reset_data()
         with pytest.raises(FileNotFoundError):
-            data_loader.load_data("/tmp/nonexistent_file.csv")
+            data_loader.load_data("nonexistent_path/missing_file.csv")

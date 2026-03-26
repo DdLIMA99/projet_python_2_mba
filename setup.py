@@ -35,7 +35,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "banking-api=banking_api.main:app",
+            "banking-api=banking_api.main:main",
         ],
     },
     classifiers=[

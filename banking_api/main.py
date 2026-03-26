@@ -80,3 +80,11 @@ def root() -> dict:
         "docs": "/docs",
         "redoc": "/redoc",
     }
+def main() -> None:
+    """CLI entry point to run the API server."""
+    import uvicorn
+    uvicorn.run("banking_api.main:app", host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    main()
